@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15.3
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c 'until nc -z db 5432; do sleep 1; done && python manage.py runserver 0.0.0.0:8000'
+    volumes:
+      - .:/code/
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
