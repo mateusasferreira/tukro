@@ -1,10 +1,10 @@
 FROM python:3.9
 
-RUN apt-get update && apt-get install -y netcat
+RUN apt-get update && apt-get install -y netcat libpq-dev postgresql postgresql-contrib
 
 WORKDIR /code
 
-COPY ./pyproject.toml ./
+COPY ./pyproject.toml poetry.lock ./
 
 RUN pip install --no-cache-dir poetry
 RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi

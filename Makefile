@@ -16,7 +16,7 @@ run: # Runs the project
 	@echo "--> Running the project"
 	docker compose up
 
-kill:
+kill: # Destroys the container
 	@echo "--> Killing the container"
 	docker compose down
 
@@ -26,4 +26,4 @@ test: # Run tests
 
 migrate: # Run migrations
 	@echo "--> Building Compose"
-	docker compose run python manage.py migrate
+	docker compose run app python manage.py migrate
