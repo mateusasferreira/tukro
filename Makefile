@@ -24,6 +24,10 @@ test: # Run tests
 	@echo "--> Testing on Docker."
 	docker compose run app pytest $(path) -s
 
+create-migrations: # Create Database Migrations
+	@echo "--> Creating Migrations"
+	docker compose run app python manage.py makemigrations
+
 migrate: # Run migrations
 	@echo "--> Building Compose"
 	docker compose run app python manage.py migrate
