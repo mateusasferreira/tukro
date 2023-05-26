@@ -84,7 +84,14 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'USER': os.getenv('DB_USER'),
         'PORT': os.getenv('DB_PORT'),
-    }
+        # 'TEST': {
+        #     'NAME': 'test'
+        # }
+    },
+    # 'test': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': 'test_tukro',
+    # }
 }
 
 

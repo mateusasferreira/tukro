@@ -22,7 +22,7 @@ kill: # Destroys the container
 
 test: # Run tests
 	@echo "--> Testing on Docker."
-	docker compose run app pytest $(path) -s
+	docker compose run app python manage.py test
 
 create-migrations: # Create Database Migrations
 	@echo "--> Creating Migrations"
