@@ -44,6 +44,17 @@ class RegistrationTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_email_taken_bad_request(self):
+        response = self.client.post('/users/signup/', {
+            'username': 'emailtakenuser',
+            'password': 'Teste@123',
+            'location': 'wherever',
+            'email': 'testexisting@email.com',
+            'birth_date': '1995-01-01'
+        })
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_week_password_bad_request(self):
         response = self.client.post('/users/signup/', {
             'username': 'testeuser2',
