@@ -11,7 +11,6 @@ class RegistrationTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        # Set up data for the whole TestCase
         cls.user_taken = User.objects.create_user(
             username= 'existinguser',
             password= 'Teste@123',
@@ -43,6 +42,7 @@ class RegistrationTest(TestCase):
         })
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue("username" in response.data["errors"])
 
     def test_email_taken_bad_request(self):
         response = self.client.post('/users/signup/', {
@@ -54,34 +54,38 @@ class RegistrationTest(TestCase):
         })
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue("email" in response.data["errors"])
 
     def test_week_password_bad_request(self):
         response = self.client.post('/users/signup/', {
-            'username': 'testeuser2',
-            'password': 'teste',
+            'username': 'testeuser',
+            'password': 'soweak',
             'location': 'wherever',
-            'email': 'test3@email.com',
+            'email': 'test@email.com',
             'birth_date': '1995-01-01'
         })
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue("password" in response.data["errors"])
 
     def test_no_location_bad_request(self):
         response = self.client.post('/users/signup/', {
-            'username': 'testeuser3',
+            'username': 'testeuser',
             'password': 'Teste@123',
-            'email': 'test4@email.com',
+            'email': 'test@email.com',
             'birth_date': '1995-01-01'
         })
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue("location" in response.data["errors"])
 
     def test_no_birth_date_bad_request(self):
         response = self.client.post('/users/signup/', {
-            'username': 'testeuser4',
+            'username': 'testeuser',
             'password': 'Teste@123',
             'location': 'wherever',
-            'email': 'test5@email.com',
+            'email': 'test@email.com',
         })
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue("birth_date" in response.data["errors"])
