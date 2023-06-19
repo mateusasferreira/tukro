@@ -1,6 +1,5 @@
 from django.http import Http404
-from django.shortcuts import render
-from rest_framework import views, response, status, permissions
+from rest_framework import views, response, status, permissions, generics
 
 from users.serializers import UserSerializer
 from users.models import User
@@ -18,15 +17,13 @@ class RegistrationView(views.APIView):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-class UsersList(views.APIView):
+
+class UsersList(generics.ListAPIView):
 
     permission_classes = [permissions.IsAuthenticated]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
-    def get(self, request):
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-
-        return response.Response(serializer.data)
 
 class UsersDetail(views.APIView):
     def get(self, request, id):
