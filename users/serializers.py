@@ -3,7 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from users.models import User
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
 
     class Meta:
