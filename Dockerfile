@@ -1,6 +1,9 @@
 FROM python:3.9
 
-RUN apt-get update && apt-get install -y netcat libpq-dev postgresql postgresql-contrib
+RUN apt-get update && apt-get install -y \
+    netcat-traditional \
+    libpq-dev postgresql \
+    postgresql-contrib
 
 WORKDIR /code
 
