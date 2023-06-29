@@ -1,3 +1,16 @@
-from django.contrib import admin
+import datetime
+from django.contrib.auth.models import UserManager
 
-# Register your models here.
+class CustomUserManager(UserManager):
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        extra_fields.setdefault('location', '')
+        extra_fields.setdefault('birth_date', datetime.datetime.now())
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(username=username, email=email, password=password, **extra_fields)
