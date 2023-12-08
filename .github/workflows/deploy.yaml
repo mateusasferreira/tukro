@@ -6,8 +6,7 @@ on:
       - main
 
 env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
+  AWS_REGION: us-east-2
 
 jobs:
   deploy:
@@ -30,9 +29,9 @@ jobs:
 
     - name: Build Docker image
       run: |
-        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com
-        docker build --tag="$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/tukro_repo:$VERSION" .
-        docker push "$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/tukro_repo:$VERSION"
+        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.$AWS_REGION.amazonaws.com
+        docker build --tag="${{ secrets.AWS_ACCOUNT }}.dkr.ecr.$AWS_REGION.amazonaws.com/tukro_repo:$VERSION" .
+        docker push "${{ secrets.AWS_ACCOUNT }}.dkr.ecr.$AWS_REGION.amazonaws.com/tukro_repo:$VERSION"
 
     - name: Create version
       run: |
