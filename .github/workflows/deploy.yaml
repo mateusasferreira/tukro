@@ -5,13 +5,13 @@ on:
     branches:
       - main
 
+  env:
+    AWS_REGION: ${{ secrets.AWS_REGION }}
+    AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
-    env:
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
 
     steps:
     - name: Checkout code
