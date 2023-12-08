@@ -21,35 +21,31 @@ jobs:
       run: |
         aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws configure set region ${{ env.AWS_REGION }}
+        aws configure set region $AWS_REGION
     
     - name: Extract Version
       id: extract_version
       run: |
-        echo $GITHUB_SHA
-        message=$(git log --merges --format=%B -n 1 $GITHUB_SHA)
-        version=$(echo $message | grep -oP '(?<=v)([\d.]+)')
-        echo "::set-output name=message::$message"
-        echo "::set-output name=version::$version"
+        export VERSION=$(git log --merges --format=%B -n 1 $GITHUB_SHA)
 
     - name: Build Docker image
       run: |
-        aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-        docker build --tag="${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/tukro_repo:${{ steps.extract_version.outputs.version }}" .
-        docker push "${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/tukro_repo:${{ steps.extract_version.outputs.version }}"
+        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com
+        docker build --tag="$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/tukro_repo:$VERSION" .
+        docker push "$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/tukro_repo:$VERSION"
 
     - name: Create version
       run: |
-        sh bin/change-version.sh ${{ steps.extract_version.outputs.version }}
+        sh bin/change-version.sh $VERSION
         zip -r infra/deploy.zip infra/Dockerrun.aws.json
-        aws s3 cp infra/deploy.zip s3://tukro-deploys/deploy-${{ steps.extract_version.outputs.version }}.zip
+        aws s3 cp infra/deploy.zip s3://tukro-deploys/deploy-$VERSION.zip
         aws elasticbeanstalk create-application-version \
           --application-name tukro-app \
-          --version-label ${{ steps.extract_version.outputs.version }} \
-          --source-bundle S3Bucket=tukro-deploys,S3Key=deploy-${{ steps.extract_version.outputs.version }}.zip
+          --version-label $VERSION \
+          --source-bundle S3Bucket=tukro-deploys,S3Key=deploy-$VERSION.zip
 
     - name: Update environment
       run: |
         aws elasticbeanstalk update-environment \        
           --environment-name tukro-app-env \
-          --version-label ${{ steps.extract_version.outputs.version }}
+          --version-label $VERSION
