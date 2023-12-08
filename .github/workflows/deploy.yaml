@@ -25,10 +25,9 @@ jobs:
     - name: Extract Version
       id: extract_version
       run: |
-        COMMIT_MESSAGE=$(git log --merges --format=%B -n 1 $GITHUB_SHA)
-        echo $COMMIT_MESSAGE
-        echo "VERSION=$COMMIT_MESSAGE" >> $GITHUB_ENV
-
+        MERGE_SHA=$(git log --merges -n 1 --format="%H" $GITHUB_SHA)
+        MERGE_COMMIT_MESSAGE=$(git log --format=%B -n 1 $MERGE_SHA)
+        echo "VERSION=$MERGE_COMMIT_MESSAGE" >> $GITHUB_ENV
 
     - name: Build Docker image
       run: |
