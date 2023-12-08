@@ -12,7 +12,6 @@ jobs:
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
-      VERSION: ${{ steps.extract_version.outputs.version }}
 
     steps:
     - name: Checkout code
@@ -35,21 +34,21 @@ jobs:
     - name: Build Docker image
       run: |
         aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-        docker build --tag="${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/tukro_repo:${{ env.VERSION }}" .
-        docker push "${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/tukro_repo:${{ env.VERSION }}"
+        docker build --tag="${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/tukro_repo:${{ steps.extract_version.outputs.version }}" .
+        docker push "${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/tukro_repo:${{ steps.extract_version.outputs.version }}"
 
     - name: Create version
       run: |
-        sh bin/change-version.sh ${{ env.VERSION }}
+        sh bin/change-version.sh ${{ steps.extract_version.outputs.version }}
         zip -r infra/deploy.zip infra/Dockerrun.aws.json
-        aws s3 cp infra/deploy.zip s3://tukro-deploys/deploy-${{ env.VERSION }}.zip
+        aws s3 cp infra/deploy.zip s3://tukro-deploys/deploy-${{ steps.extract_version.outputs.version }}.zip
         aws elasticbeanstalk create-application-version \
           --application-name tukro-app \
-          --version-label ${{ env.VERSION }} \
-          --source-bundle S3Bucket=tukro-deploys,S3Key=deploy-${{ env.VERSION }}.zip
+          --version-label ${{ steps.extract_version.outputs.version }} \
+          --source-bundle S3Bucket=tukro-deploys,S3Key=deploy-${{ steps.extract_version.outputs.version }}.zip
 
     - name: Update environment
       run: |
         aws elasticbeanstalk update-environment \        
           --environment-name tukro-app-env \
-          --version-label ${{ env.VERSION }}
+          --version-label ${{ steps.extract_version.outputs.version }}
