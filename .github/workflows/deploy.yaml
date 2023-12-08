@@ -26,6 +26,7 @@ jobs:
     - name: Extract Version
       id: extract_version
       run: |
+        echo $GITHUB_SHA
         message=$(git log --merges --format=%B -n 1 $GITHUB_SHA)
         version=$(echo $message | grep -oP '(?<=v)([\d.]+)')
         echo "::set-output name=message::$message"
