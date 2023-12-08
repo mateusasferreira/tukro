@@ -1,0 +1,12 @@
+{
+    "AWSEBDockerrunVersion": "1",
+    "Image": {
+      "Name": "466706364244.dkr.ecr.us-east-2.amazonaws.com/tukro_repo:latest",
+      "Update": "true"
+    },
+    "Ports": [
+      {
+        "ContainerPort": 8000
+      }
+    ]
+  }

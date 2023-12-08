@@ -1,9 +1,9 @@
 from rest_framework import (
     viewsets, permissions, response, status
 )
-from communities.models import Community
-from communities.permissions import CommunityPermission
-from communities.serializers import CommunitySerializer
+from  apps.communities.models import Community
+from  apps.communities.permissions import CommunityPermission
+from  apps.communities.serializers import CommunitySerializer
 
 
 class CommunityViewSet(viewsets.ModelViewSet):

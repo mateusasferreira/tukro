@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import os
 from datetime import timedelta
+import sys
 
 
 REST_FRAMEWORK = {
@@ -32,6 +33,8 @@ SIMPLE_JWT = {
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+PROJECT_ROOT = os.path.dirname(__file__)
+sys.path.insert(0, os.path.join(PROJECT_ROOT, 'apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -40,9 +43,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('APP_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG') == '1'
+DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -55,8 +58,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework_simplejwt',
-    'users',
-    'communities'
+    'apps.users',
+    'apps.communities'
 ]
 
 MIDDLEWARE = [
@@ -101,14 +104,7 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'USER': os.getenv('DB_USER'),
         'PORT': os.getenv('DB_PORT'),
-        # 'TEST': {
-        #     'NAME': 'test'
-        # }
     },
-    # 'test': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': 'test_tukro',
-    # }
 }
 
 
@@ -154,3 +150,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ROOT_URLCONF = "tukro.urls"

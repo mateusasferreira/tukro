@@ -1,0 +1,55 @@
+name: Deploy to AWS Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
+      VERSION: ${{ steps.extract_version.outputs.version }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      run: |
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws configure set region ${{ env.AWS_REGION }}
+    
+    - name: Extract Version
+      id: extract_version
+      run: |
+        message=$(git log --merges --format=%B -n 1 $GITHUB_SHA)
+        version=$(echo $message | grep -oP '(?<=v)([\d.]+)')
+        echo "::set-output name=message::$message"
+        echo "::set-output name=version::$version"
+
+    - name: Build Docker image
+      run: |
+        aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+        docker build --tag="${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/tukro_repo:${{ env.VERSION }}" .
+        docker push "${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/tukro_repo:${{ env.VERSION }}"
+
+    - name: Create version
+      run: |
+        sh bin/change-version.sh ${{ env.VERSION }}
+        zip -r infra/deploy.zip infra/Dockerrun.aws.json
+        aws s3 cp infra/deploy.zip s3://tukro-deploys/deploy-${{ env.VERSION }}.zip
+        aws elasticbeanstalk create-application-version \
+          --application-name tukro-app \
+          --version-label ${{ env.VERSION }} \
+          --source-bundle S3Bucket=tukro-deploys,S3Key=deploy-${{ env.VERSION }}.zip
+
+    - name: Update environment
+      run: |
+        aws elasticbeanstalk update-environment \        
+          --environment-name tukro-app-env \
+          --version-label ${{ env.VERSION }}

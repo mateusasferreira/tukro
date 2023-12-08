@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.9 AS base
 
 RUN apt-get update && apt-get install -y \
     netcat-traditional \
@@ -15,3 +15,9 @@ RUN poetry config virtualenvs.create false && poetry install --no-interaction --
 COPY . .
 
 EXPOSE 8000
+
+FROM base AS production
+
+RUN chmod +x /code/bin/run.sh
+
+CMD ["sh", "/code/bin/run.sh"]

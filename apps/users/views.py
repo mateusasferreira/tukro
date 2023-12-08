@@ -1,8 +1,8 @@
 from django.http import Http404
 from rest_framework import views, response, status, permissions, generics
 
-from users.serializers import UserSerializer
-from users.models import User
+from  apps.users.serializers import UserSerializer
+from  apps.users.models import User
 
 class RegistrationView(views.APIView):
 

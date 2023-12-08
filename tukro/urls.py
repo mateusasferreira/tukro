@@ -14,11 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.http import HttpResponse
 from django.urls import path, include
-from communities.urls import router
+from  apps.communities.urls import router
+
+def ping_view(request):
+    return HttpResponse("pong")
 
 urlpatterns = [
+    path('ping', ping_view),
     path('admin/', admin.site.urls),
-    path('users/', include('users.urls')),
-    path('', include('communities.urls')),
+    path('users/', include('apps.users.urls')),
+    path('', include('apps.communities.urls')),
 ]

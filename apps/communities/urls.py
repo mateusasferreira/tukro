@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from communities.views import CommunityViewSet
+from  apps.communities.views import CommunityViewSet
 
 router = routers.SimpleRouter()
 router.register(r'communities', viewset=CommunityViewSet)
