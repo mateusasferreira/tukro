@@ -16,6 +16,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Check AWS CLI version
+      run: aws --version
+
     - name: Configure AWS credentials
       run: |
         aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -46,7 +49,4 @@ jobs:
           --source-bundle S3Bucket=tukro-deploys,S3Key=deploy-$VERSION.zip
 
     - name: Update environment
-      run: |
-        aws elasticbeanstalk update-environment \        
-          --environment-name tukro-app-env \
-          --version-label $VERSION
+      run: aws elasticbeanstalk update-environment --environment-name tukro-app-env --version-label $VERSION --debug
