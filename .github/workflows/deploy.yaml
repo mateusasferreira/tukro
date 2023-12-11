@@ -38,12 +38,13 @@ jobs:
     - name: Create version
       run: |
         sh bin/change-version.sh $VERSION
-        zip -r infra/deploy.zip infra/Dockerrun.aws.json
-        aws s3 cp infra/deploy.zip s3://tukro-deploys/deploy-$VERSION.zip
+        cd infra
+        zip -r deploy.zip Dockerrun.aws.json
+        aws s3 cp deploy.zip s3://tukro-deploys/deploy-$VERSION.zip
         aws elasticbeanstalk create-application-version \
           --application-name tukro-app \
           --version-label $VERSION \
           --source-bundle S3Bucket=tukro-deploys,S3Key=deploy-$VERSION.zip
 
     - name: Update environment
-      run: aws elasticbeanstalk update-environment --environment-name tukro-app-env --version-label $VERSION --debug
+      run: aws elasticbeanstalk update-environment --environment-name tukro-app-env --version-label $VERSION
