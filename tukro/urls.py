@@ -19,7 +19,7 @@ from django.urls import path, include
 from  apps.communities.urls import router
 
 def ping_view(request):
-    return HttpResponse("pong")
+    return HttpResponse("PONG")
 
 urlpatterns = [
     path('ping', ping_view),
